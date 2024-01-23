@@ -3,6 +3,8 @@
 #include "encoders.h"
 #include "kinematics.h"
 #include "pid.h"
+#include "math.h"
+
 
 #define BUZZER_PIN 6 // Pin for analogue input
 #define LED_PIN 13  // Pin to activate the orange LED
@@ -14,6 +16,11 @@ boolean buzz_state;
 int number_flash = 0;
 int freq = 1;
 int duration = 200;
+
+
+float a;
+float b;
+float c;
 
 void flash_leds () {
   if( led_state == true ) {
@@ -33,6 +40,7 @@ void sound_buzz (int duration) {
       buzz_state = true;
       digitalWrite( BUZZER_PIN, HIGH);
     }
+  
 }
 
 
@@ -40,16 +48,17 @@ void sound_buzz (int duration) {
 // put your setup code here, to run once:
 void setup() {
 
-  Serial.begin(9600);
+  //Start a serial connection
+  Serial.begin( 9600 );
+
+  // Wait for stable connection, report reset.
   delay(1000);
   Serial.println("***RESET***");
 
-  // Set LED pin as an output
-  pinMode( LED_PIN, OUTPUT );
-  pinMode( BUZZER_PIN, OUTPUT);
-
-  // Set initial state of the LED
-  led_state = false;
+  a = TWO_PI;
+  b = a;
+  c = b;
+  
 }
 
 
@@ -57,13 +66,20 @@ void setup() {
 // put your main code here, to run repeatedly:
 void loop() {
   
-  freq = freq + 5;
-  number_flash ++;
+  a += 0.01;
+  b = sin( a * 20 );
+  c = cos( a * 10 );
 
-  // We use the variable to set the
-  // debug led on or off on the 3Pi+
-  digitalWrite( LED_PIN, led_state );
+  Serial.print( a );
+  Serial.print( ",");
+  Serial.print( b );
+  Serial.print( ",");
+  Serial.print( c );
 
-  Serial.println("loop");
-  delay(freq);
+  Serial.print( "\n" );   // Finish with a newline
+  //Serial.println( "" ); // either of these two work.
+
+  delay(50);
+
+  
 }
