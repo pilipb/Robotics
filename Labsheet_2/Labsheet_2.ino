@@ -12,17 +12,27 @@
 # define R_PWM_PIN 9
 # define R_DIR_PIN 15
 
-# define FWD HIGH // Remember notation
-# define REV LOW
+# define REV HIGH // Remember notation
+# define FWD LOW
 
-int speed = 0;
-boolean dir_backwards = false;
+int speed = 20;
+boolean dir_forwards = true;
 
 void circle(int size) {
   // go in a circle radius size
-  analogWrite( L_PWM_PIN, speed * sin(size + 10));
+  analogWrite( L_PWM_PIN, speed * sin(size + 2));
   analogWrite( R_PWM_PIN, speed * sin(size ));
 
+}
+
+void set_dir(boolean forwards) {
+  if (forwards) {
+    digitalWrite( L_DIR_PIN, FWD);
+    digitalWrite( R_DIR_PIN, FWD);
+  } else {
+    digitalWrite( L_DIR_PIN, REV);
+    digitalWrite( R_DIR_PIN, REV);
+  }
 }
 
 // Runs once.
@@ -36,14 +46,7 @@ void setup() {
   pinMode( R_DIR_PIN, OUTPUT);
   pinMode( L_DIR_PIN, OUTPUT);
 
-  // Set initial direction (HIGH/LOW)
-  if (dir_forwards = true) {
-    analogWrite( L_DIR_PIN, FWD); // l direction dictates forward
-    analogWrite( R_DIR_PIN, REV);
-  } else {
-    analogWrite( L_DIR_PIN, REV); // l direction dictates forward
-    analogWrite( R_DIR_PIN, FWD);
-  }
+  set_dir(dir_forwards);
 
   // Initial speed
   analogWrite( L_PWM_PIN, speed);
@@ -60,14 +63,13 @@ void loop() {
 
   // Add code to set the direction of rotation
   // for the left and right motor here.
-
   analogWrite( L_PWM_PIN, speed );
   analogWrite( R_PWM_PIN, speed );
-  Serial.println("Speed: " + String(speed));
+
+  //  Serial.println("Speed: " + String(speed));
   //  circle(10);
-  speed++;
 
   // An empty loop can block further uploads.
   // A small delay to prevent this for now.
-  delay(2000);
+  delay(5);
 }
