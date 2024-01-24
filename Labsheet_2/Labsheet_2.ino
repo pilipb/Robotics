@@ -15,8 +15,9 @@
 # define REV HIGH // Remember notation
 # define FWD LOW
 
-int speed = 20;
+int speed = 45;
 boolean dir_forwards = true;
+unsigned long startTime;
 
 void circle(int size) {
   // go in a circle radius size
@@ -35,12 +36,11 @@ void set_dir(boolean forwards) {
   }
 }
 
+
 // Runs once.
 void setup() {
 
   // Set all the motor pins as outputs.
-  // There are 4 pins in total to set.
-  // ...
   pinMode( L_PWM_PIN, OUTPUT);
   pinMode( R_PWM_PIN, OUTPUT);
   pinMode( R_DIR_PIN, OUTPUT);
@@ -48,28 +48,28 @@ void setup() {
 
   set_dir(dir_forwards);
 
-  // Initial speed
-  analogWrite( L_PWM_PIN, speed);
-  analogWrite( R_PWM_PIN, speed);
-
   // Start serial, send debug text.
   Serial.begin(9600);
-  delay(1000);
-  Serial.println("***RESET***");
+  startTime = millis();
+
 }
 
 // Repeats.
 void loop() {
 
-  // Add code to set the direction of rotation
-  // for the left and right motor here.
+  unsigned long currentTime = millis();
+  unsigned long elapsedTime = currentTime - startTime;
+  if (elapsedTime >= 5000) {
+    Serial.println("Time: " + String(elapsedTime));
+    while (1) {
+      analogWrite( L_PWM_PIN, 0 );
+      analogWrite( R_PWM_PIN, 0 );
+    }
+    return;
+  }
+
   analogWrite( L_PWM_PIN, speed );
   analogWrite( R_PWM_PIN, speed );
 
-  //  Serial.println("Speed: " + String(speed));
-  //  circle(10);
-
-  // An empty loop can block further uploads.
-  // A small delay to prevent this for now.
-  delay(5);
+  delay(50);
 }
