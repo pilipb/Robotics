@@ -1,43 +1,33 @@
 
 #include "linesensor.h"
+#include "motors.h"
 
+Motors_c motor;
 LineSensor_c linesensor;
 
 
-#define MAX_SAMPLES 10
-float results[ MAX_SAMPLES ];
 
+// The pin used to activate the IR LEDs
+#define EMIT_PIN 11
 
 void setup() {
 
-  linesensor.initialise();
 
-  // Start Serial, wait to connect, print a debug message.
+  linesensor.initialise();
+  motor.initialise();
+
+  // Configure the Serial port
   Serial.begin(9600);
-  delay(1500);
-  Serial.println("***RESET***");
 
 }
 
-
 void loop() {
 
-  float elapsed_time = linesensor.readLineSensor(3);
-  Serial.println(elapsed_time);
-  delay(500);
+  int dir;
+  dir = linesensor.updateDir();
+  motor.turn(dir*20);
+  Serial.print(" dir: " + String(dir) );
+  Serial.print( "\n" );
 
-  //
-//  for (int i = 0; i < MAX_SAMPLES; i++) {
-//    results[i] = readLineSensor(0);
-//    delay(200);
-//  }
-
-//  while ( true ) {
-//    Serial.println("Results: ");
-//    for ( int i = 0; i < MAX_SAMPLES; i++ ) {
-//      Serial.println( results[i] );
-//    }
-//    delay(1000);
-//  }
-
+  delay(50);
 }

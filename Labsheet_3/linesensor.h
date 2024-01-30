@@ -22,16 +22,51 @@ class LineSensor_c {
 
     void initialise() {
       // Set some initial pin modes and states
-      pinMode( EMIT_PIN, OUTPUT ); // Set EMIT as an input (off)
+      pinMode( EMIT_PIN, INPUT ); // Set EMIT as an input (off)
       digitalWrite( EMIT_PIN, HIGH ); // turns on IR
     }
 
 
+    int updateDir() {
+      // function to read the middle three sensors and as a result return whether the
+      // robot should turn left -1, right 1, straight 0
+
+      // scenario 1: all sensors on the line, return 0
+      if (onLine(1) && onLine(2) && onLine(3)) {
+        return 0; // going straight along line
+      }
+      if (not onLine(1) && onLine(2) && onLine(3)) {
+        // too far left, should turn right
+        return 1;
+      }
+      if (onLine(1) && onLine(2) && not onLine(3)) {
+        // too far right, should turn left
+        return -1;
+      } else {
+        // error state (line finished)
+        return 0;
+      }
+
+    }
+
+    boolean onLine(int sensorNumber) {
+      // returns whether the given sensor is on the line (true)
+      //      or not
+      float val = readLineSensor(sensorNumber);
+      if (val > 1200) {
+        return true;
+      } else {
+        return false;
+      }
+    }
 
 
     float readLineSensor(int sensorNumber) {
       //  function to read ls 1-5 and output float val index 0
       //  12, A0, A2, A3, A4
+      pinMode( EMIT_PIN, OUTPUT );
+      digitalWrite( EMIT_PIN, HIGH );
+
       if (sensorNumber < 0 || sensorNumber > 4) {
         // Invalid sensor number, handle error or return a specific value
         Serial.println("Invalid sensor number");
