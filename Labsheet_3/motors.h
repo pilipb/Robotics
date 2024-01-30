@@ -31,11 +31,17 @@ class Motors_c {
 
     }
 
+    void stayOnLine(int dir, int speed) {
+      // scale power to the wheels based the direction from linesensor
+      // -1 = left, 0 = straight, 1 = right
+      setMotorPower( speed + dir*10, speed - dir*10);
+    }
+
     void turn(int speed_dir) {
       // positive = clockwise
       if (speed_dir == 0) {
         // stop
-        setMotorPower(0,0);
+        setMotorPower(0, 0);
       } else {
         // rotate
         setMotorPower( speed_dir, -speed_dir);
