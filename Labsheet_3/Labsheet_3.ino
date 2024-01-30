@@ -14,7 +14,7 @@ void setup() {
 
 
   linesensor.initialise();
-//  motor.initialise();
+  //  motor.initialise();
 
   // Configure the Serial port
   Serial.begin(9600);
@@ -22,17 +22,22 @@ void setup() {
 }
 
 void loop() {
+  //  int dir;
+  //  dir = linesensor.bangFollow(); // bang bang control
+  //  Serial.println("dir: " + String(dir));
+  //  motor.stayOnLine(dir, 20);
+  //  delay(100);
 
+  float readings[5] = {};
 
-//  int dir;
-//  dir = linesensor.updateDir();
-//  motor.turn(dir * 20);
-//  delay(20);
-//  // go forward
-//  motor.setMotorPower(20,20);
-//  Serial.print(" dir: " + String(dir) );
-//  Serial.print( "\n" );
-  Serial.println("reading: " + String(reading));
+  // FOR ALL SENSORS
+  linesensor.getReadings(readings);
+  linesensor.weightReadings(readings);
 
-  delay(100);
+  Serial.println("\nreadings:");
+  for (int i = 0; i < 5; i++) {
+    Serial.println(String(readings[i]));
+  }
+
+  delay(200);
 }
