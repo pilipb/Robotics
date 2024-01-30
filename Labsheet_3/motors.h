@@ -34,7 +34,7 @@ class Motors_c {
     void stayOnLine(int dir, int speed) {
       // scale power to the wheels based the direction from linesensor
       // -1 = left, 0 = straight, 1 = right
-      setMotorPower( speed + dir*10, speed - dir*10);
+      setMotorPower( speed + dir*speed*3, speed - dir*speed*3);
     }
 
     void turn(int speed_dir) {
