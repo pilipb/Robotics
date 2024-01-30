@@ -14,7 +14,7 @@ void setup() {
 
 
   linesensor.initialise();
-  //  motor.initialise();
+  motor.initialise();
 
   // Configure the Serial port
   Serial.begin(9600);
@@ -28,16 +28,8 @@ void loop() {
   //  motor.stayOnLine(dir, 20);
   //  delay(100);
 
-  float readings[5] = {};
-
-  // FOR ALL SENSORS
-  linesensor.getReadings(readings);
-  linesensor.weightReadings(readings);
-
-  Serial.println("\nreadings:");
-  for (int i = 0; i < 5; i++) {
-    Serial.println(String(readings[i]));
-  }
-
-  delay(200);
+  float dir;
+  dir = linesensor.weightFollow(); // weighted control
+  motor.stayOnLine(dir, 30);
+  delay(100);
 }
