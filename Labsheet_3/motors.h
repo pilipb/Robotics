@@ -31,10 +31,10 @@ class Motors_c {
 
     }
 
-    void stayOnLine(int dir, int speed) {
+    void stayOnLine(float dir, int speed) {
       // scale power to the wheels based the direction from linesensor
-      // -1 = left, 0 = straight, 1 = right
-      setMotorPower( speed + dir*speed*3, speed - dir*speed*3);
+      // dir too far: = -1 = left, 0 = straight, 1 = right
+      setMotorPower( 20 + (dir*speed), 20 - (dir*speed));
     }
 
     void turn(int speed_dir) {
@@ -59,7 +59,7 @@ class Motors_c {
     }
 
     void setMotorPower( float left_pwm, float right_pwm ) {
-      // Sets the power up to 70 and direction of the motors.
+      // Sets the power up to 90 and direction of the motors.
       // Set the direction based on the sign of the input values
       if (left_pwm >= 0) {
         digitalWrite(L_DIR_PIN, FWD);
@@ -74,8 +74,8 @@ class Motors_c {
       }
 
       // Map the absolute values of pwm to the range [0, 70]
-      int left_pwm_mapped = constrain(abs(left_pwm), 0, 70);
-      int right_pwm_mapped = constrain(abs(right_pwm), 0, 70);
+      int left_pwm_mapped = constrain(abs(left_pwm), 0, 90);
+      int right_pwm_mapped = constrain(abs(right_pwm), 0, 90);
 
       // Set the PWM values using analogWrite()
       analogWrite(L_PWM_PIN, left_pwm_mapped);

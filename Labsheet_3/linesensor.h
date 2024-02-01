@@ -64,9 +64,7 @@ class LineSensor_c {
       float ls4 = analogLineSensor(3);
       float sum = ls2 + ls4;
       //      normalise and double
-      ls2 = ls2 * 2 / sum;
-      ls4 = ls4 * 2 / sum;
-      float W = ls4 - ls2;
+      float W = (ls4 - ls2)*2 / max(ls2,ls4);
       return W;
     }
 
@@ -91,7 +89,7 @@ class LineSensor_c {
       // returns whether the given sensor is on the line (true)
       //      or not
       int val = analogLineSensor(sensorNumber);
-      if (val > 750) {
+      if (val > 700) {
         return true;
       } else {
         return false;
