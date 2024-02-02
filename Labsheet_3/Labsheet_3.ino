@@ -1,51 +1,66 @@
 
 #include "linesensor.h"
 #include "motors.h"
+#include "encoders.h"
+#include "kinematics.h"
+
 
 Motors_c motor;
 LineSensor_c linesensor;
+Kinematics_c matics;
 
+long e0_count_t;
+long e1_count_t;
 
-
-// The pin used to activate the IR LEDs
-#define EMIT_PIN 11
-
-float readings[5];
+// timings
+unsigned long kinematics_ts;
 
 void setup() {
 
-
+  setupEncoder0();
+  setupEncoder1();
   linesensor.initialise();
   motor.initialise();
+  matics.initialise();
+
+  e0_count_t = 0;
+  e1_count_t = 0;
+
+  kinematics_ts = millis();
 
   // Configure the Serial port
   Serial.begin(9600);
-  delay(100);
 
 }
 
 void loop() {
-  //  int dir;
-  //  dir = linesensor.bangFollow(); // bang bang control
-  //  Serial.println("dir: " + String(dir));
-  //  motor.stayOnLine(dir, 20);
-  //  delay(100);
 
-  //  boolean online = linesensor.onLine(2);
+  //  float dir;
+  //  dir = linesensor.weightFollow(); // weighted control
+  //  motor.stayOnLine(dir, 70);
+  //  Serial.println(count_e0);
+  //  Serial.println(count_e1);
 
-  //  linesensor.getReadings(readings);
-  //  Serial.println(readings[1]);
-  ////  Serial.print("");
-  //  Serial.println(readings[2]);
-  ////  Serial.print("");
-  //  Serial.println(readings[3]);
-  ////  Serial.print("");
+  // this gets the net distance traveled by the robot in the update
+  unsigned long elapsed_ts = millis() - kinematics_ts;
 
-  float dir;
-  dir = linesensor.weightFollow(); // weighted control
-  //  dir = linesensor.bangFollow();
-  Serial.println("dir: " + String(dir));
-  motor.stayOnLine(dir, 70);
-  delay(15);
+  if( elapsed_ts > 1000) {
+    
+    long delta_e0 = (count_e0 - e0_count_t); // counts since last reading +ve is forward
+    long delta_e1 = (count_e1 - e1_count_t);
 
+    matics.update(delta_e0, delta_e1);
+
+//    Serial.println("e0: " + String(count_e0));
+//    Serial.println("e1: " + String(count_e1));
+    
+    // update legacy values:
+    e0_count_t = count_e0;
+    e1_count_t = count_e1;
+    kinematics_ts = millis();
+  }
+
+  
+
+  
 }
