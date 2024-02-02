@@ -45,8 +45,6 @@ ISR( INT6_vect ) {
     state_e0 = state_e0 | ( e0_A  << 2 );
 
     // Handle which transition we have registered.
-    // Complete this if statement as necessary.
-    // Refer to the labsheet. 
     if( state_e0 == 1 | state_e0 == 7 | state_e0 == 8 | state_e0 == 14 ) {
       // forwards
       count_e0 = count_e0 -1;      
