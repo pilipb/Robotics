@@ -39,19 +39,17 @@ class Kinematics_c {
       e0_dist = e0_dist * step_mm0;
       e1_dist = e1_dist * step_mm1;
 
-      float X_dot = 0.5 * (e0_dist + e1_dist);
+      float X_dot = 0.5 * (e0_dist + e1_dist) * 1.1; // experimental factor
       global_X = global_X + (X_dot * cos(global_theta));
       global_Y = global_Y + (X_dot * sin(global_theta));
 
       // update theta
-      float theta_dot =  (e1_dist - e0_dist) / (2*l);
+      float theta_dot =  ((e1_dist - e0_dist) * 1.2 )/ (2 * l) ; // experimental factor improves theta accuracy
       global_theta = global_theta + theta_dot;
 
-      //      Serial.println("X: " + String(global_X));
-      //      Serial.println("Y: " + String(global_Y));
-      Serial.println("Angle: " + String(global_theta));
-
     }
+
+    
 
 };
 

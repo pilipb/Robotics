@@ -26,10 +26,13 @@ void setup() {
   e0_count_t = 0;
   e1_count_t = 0;
 
+  delay(1000);
+
   kinematics_ts = millis();
 
   // Configure the Serial port
   Serial.begin(9600);
+  
 
 }
 
@@ -44,23 +47,21 @@ void loop() {
   // this gets the net distance traveled by the robot in the update
   unsigned long elapsed_ts = millis() - kinematics_ts;
 
-  if( elapsed_ts > 1000) {
-    
+  motor.setMotorPower(30,30);
+
+  if( elapsed_ts > 50) {
     long delta_e0 = (count_e0 - e0_count_t); // counts since last reading +ve is forward
     long delta_e1 = (count_e1 - e1_count_t);
-
     matics.update(delta_e0, delta_e1);
-
-//    Serial.println("e0: " + String(count_e0));
-//    Serial.println("e1: " + String(count_e1));
-    
     // update legacy values:
     e0_count_t = count_e0;
     e1_count_t = count_e1;
     kinematics_ts = millis();
   }
 
-  
+  if( global_X > 300) {
+    motor.stop_robot();
+  }
 
   
 }
