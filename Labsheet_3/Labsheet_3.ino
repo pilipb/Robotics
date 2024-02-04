@@ -3,8 +3,9 @@
 #include "motors.h"
 #include "encoders.h"
 #include "kinematics.h"
+#include "pid.h"
 
-
+PID_c pid;
 Motors_c motor;
 LineSensor_c linesensor;
 Kinematics_c matics;
@@ -15,6 +16,10 @@ long e1_count_t;
 // timings
 unsigned long kinematics_ts;
 unsigned long ts;
+
+// pid
+float feedback0;
+float feedback1;
 
 // rot velocity
 double vel_rot0;
@@ -27,13 +32,14 @@ void setup() {
   linesensor.initialise();
   motor.initialise();
   matics.initialise();
+  pid.initialise(5);
 
   e0_count_t = 0;
   e1_count_t = 0;
 
-  //  delay(1000);
+  feedback0 = 0;
+  feedback1 = 0;
 
-  kinematics_ts = millis();
   ts = millis();
 
   // Configure the Serial port
@@ -44,13 +50,8 @@ void setup() {
 
 void loop() {
 
-  //  float dir;
-  //  dir = linesensor.weightFollow(); // weighted control
-  //  motor.stayOnLine(dir, 70);
-  //  Serial.println(count_e0);
-  //  Serial.println(count_e1);
+  motor.setMotorPower(10 + feedback0, 10 + feedback1);
 
-  // this gets the net distance traveled by the robot in the update
   unsigned long elapsed_ts = millis() - ts;
 
   if ( elapsed_ts > 10) {
@@ -59,7 +60,18 @@ void loop() {
     vel_rot0 = vel_rot(0, elapsed_ts);
     vel_rot1 = vel_rot(1, elapsed_ts);
 
+    feedback0 = pid.update(5, vel_rot0);
+    feedback1 = pid.update(5, vel_rot0);
+
+    Serial.print("Demand:");
+    Serial.print(5);
+    Serial.print(" ");
+    Serial.print("feedback:");
+    Serial.print(feedback0);
+    Serial.print(" ");
+    Serial.print("measure:");
     Serial.println(vel_rot0);
+
 
     e0_count_t = count_e0;
     e1_count_t = count_e1;
@@ -69,8 +81,8 @@ void loop() {
 
 double vel_rot(int wheel, unsigned long elapsed_ts) {
 
-  double alpha = 0.1;
-  double delta_e = 0;
+  float alpha = 0.1;
+  float delta_e = 0;
 
   if (wheel == 0) {
     delta_e = count_e0 - e0_count_t;
@@ -83,8 +95,8 @@ double vel_rot(int wheel, unsigned long elapsed_ts) {
 
   // low pass filter
   double velocity = delta_e / elapsed_ts;
-  vel_rot0 = alpha * velocity + (1 - alpha) * velocity;
-  
+//  double fil_velocity = alpha * velocity + (1 - alpha) * velocity;
+
   return velocity;
 
 }
