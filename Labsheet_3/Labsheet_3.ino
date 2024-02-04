@@ -14,6 +14,11 @@ long e1_count_t;
 
 // timings
 unsigned long kinematics_ts;
+unsigned long ts;
+
+// rot velocity
+double vel_rot0;
+double vel_rot1;
 
 void setup() {
 
@@ -26,13 +31,14 @@ void setup() {
   e0_count_t = 0;
   e1_count_t = 0;
 
-  delay(1000);
+  //  delay(1000);
 
   kinematics_ts = millis();
+  ts = millis();
 
   // Configure the Serial port
   Serial.begin(9600);
-  
+
 
 }
 
@@ -45,23 +51,40 @@ void loop() {
   //  Serial.println(count_e1);
 
   // this gets the net distance traveled by the robot in the update
-  unsigned long elapsed_ts = millis() - kinematics_ts;
+  unsigned long elapsed_ts = millis() - ts;
 
-  motor.setMotorPower(30,30);
+  if ( elapsed_ts > 10) {
 
-  if( elapsed_ts > 50) {
-    long delta_e0 = (count_e0 - e0_count_t); // counts since last reading +ve is forward
-    long delta_e1 = (count_e1 - e1_count_t);
-    matics.update(delta_e0, delta_e1);
-    // update legacy values:
+
+    vel_rot0 = vel_rot(0, elapsed_ts);
+    vel_rot1 = vel_rot(1, elapsed_ts);
+
+    Serial.println(vel_rot0);
+
     e0_count_t = count_e0;
     e1_count_t = count_e1;
-    kinematics_ts = millis();
+    ts = millis();
+  }
+}
+
+double vel_rot(int wheel, unsigned long elapsed_ts) {
+
+  double alpha = 0.1;
+  double delta_e = 0;
+
+  if (wheel == 0) {
+    delta_e = count_e0 - e0_count_t;
+  } else if (wheel == 1) {
+    delta_e = count_e1 - e1_count_t;
+  } else {
+    Serial.println("Invalid wheel index");
+    return 0;
   }
 
-  if( global_X > 300) {
-    motor.stop_robot();
-  }
-
+  // low pass filter
+  double velocity = delta_e / elapsed_ts;
+  vel_rot0 = alpha * velocity + (1 - alpha) * velocity;
   
+  return velocity;
+
 }
