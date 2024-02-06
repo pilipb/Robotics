@@ -92,10 +92,7 @@ class Motors_c {
     }
 
     void stop_robot() {
-      while (1) {
-        analogWrite( L_PWM_PIN, 0 );
-        analogWrite( R_PWM_PIN, 0 );
-      }
+      setMotorPower(0,0);
     }
 
 
