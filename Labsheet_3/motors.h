@@ -4,6 +4,9 @@
 #ifndef _MOTORS_H
 #define _MOTORS_H
 
+#include "encoders.h"
+#include "kinematics.h"
+
 # define L_PWM_PIN 10
 # define L_DIR_PIN 16
 # define R_PWM_PIN 9
@@ -11,6 +14,9 @@
 
 # define REV HIGH // Remember notation
 # define FWD LOW
+
+long e0_count_t;
+long e1_count_t;
 
 
 // Class to operate the motor(s).
@@ -34,7 +40,7 @@ class Motors_c {
     void stayOnLine(float dir, int speed) {
       // scale power to the wheels based the direction from linesensor
       // dir too far: = -1 = left, 0 = straight, 1 = right
-      setMotorPower( 20 + (dir*speed), 20 - (dir*speed)); // speed is effectivel K_p gain
+      setMotorPower( 20 + (dir * speed), 20 - (dir * speed)); // speed is effectivel K_p gain
     }
 
     void turn(int speed_dir) {
@@ -47,6 +53,29 @@ class Motors_c {
         setMotorPower( speed_dir, -speed_dir);
       }
     }
+
+    float vel_rot(int wheel, unsigned long elapsed_ts) {
+
+      //  float alpha = 0.1;
+      float delta_e;
+      float dt = elapsed_ts;
+
+      if (wheel == 0) {
+        delta_e = count_e0 - e0_count_t;
+      } else if (wheel == 1) {
+        delta_e = count_e1 - e1_count_t;
+      } else {
+        Serial.println("Invalid wheel index");
+        return 0;
+      }
+
+      float velocity = delta_e / dt;
+
+      return velocity;
+
+    }
+
+
 
     void set_dir(boolean forwards) {
       if (forwards) {
@@ -92,7 +121,7 @@ class Motors_c {
     }
 
     void stop_robot() {
-      setMotorPower(0,0);
+      setMotorPower(0, 0);
     }
 
 
