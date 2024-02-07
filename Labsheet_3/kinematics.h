@@ -44,7 +44,7 @@ class Kinematics_c {
       global_Y = global_Y + (X_dot * sin(global_theta));
 
       // update theta
-      float theta_dot =  ((e1_dist - e0_dist) * 1.2 )/ (2 * l) ; // experimental factor improves theta accuracy
+      float theta_dot =  ((e1_dist - e0_dist))/ (2 * l) ; // experimental factor improves theta accuracy
       global_theta = global_theta + theta_dot;
 
     }
