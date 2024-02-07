@@ -6,6 +6,7 @@
 
 #include "encoders.h"
 #include "kinematics.h"
+#include "pid.h"
 
 # define L_PWM_PIN 10
 # define L_DIR_PIN 16
@@ -17,6 +18,9 @@
 
 long e0_count_t;
 long e1_count_t;
+
+PID_c heading_pid;
+float heading_feedback;
 
 
 // Class to operate the motor(s).
@@ -35,6 +39,9 @@ class Motors_c {
       pinMode( R_DIR_PIN, OUTPUT);
       pinMode( L_DIR_PIN, OUTPUT);
 
+      heading_pid.initialise(10, 0, 0);
+      heading_feedback = 0;
+
     }
 
     void stayOnLine(float dir, int speed) {
@@ -43,15 +50,14 @@ class Motors_c {
       setMotorPower( 20 + (dir * speed), 20 - (dir * speed)); // speed is effectivel K_p gain
     }
 
-    void turn(int speed_dir) {
-      // positive = clockwise
-      if (speed_dir == 0) {
-        // stop
-        setMotorPower(0, 0);
-      } else {
-        // rotate
-        setMotorPower( speed_dir, -speed_dir);
+    void turn_to(float heading_demand, unsigned long elapsed_ts) {
+
+      if ((heading_demand - global_theta) < 0.01) {
+        stop_robot();
       }
+      heading_feedback = heading_pid.update(heading_demand, global_theta, elapsed_ts);
+      setMotorPower(heading_feedback,-heading_feedback);
+
     }
 
     float vel_rot(int wheel, unsigned long elapsed_ts) {
