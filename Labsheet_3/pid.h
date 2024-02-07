@@ -52,10 +52,10 @@ class PID_c {
       if ( abs(error) > abs(0.95 * demand)) {
         dt = 0;
       } else {
-        i_term = i_term + (error * dt);
+        i_term =  i_term + (error * dt);
       }
-      
-     
+
+
       float feedback = p_gain * p_term + i_gain * i_term + d_gain * d_term;
 
       i_prev = i_term * i_gain;
