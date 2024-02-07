@@ -34,15 +34,9 @@ class PID_c {
 
     }
 
-    float ramp_demand(float demand) {
-      unsigned long current_t = millis()
-
-      
-      
-    }
 
     float update( float demand, float measure, unsigned long elapsed_ts) {
-      
+
       // function to return the feedback value
       float dt = elapsed_ts;
       float error = demand - measure;
@@ -50,18 +44,23 @@ class PID_c {
       // proportional component
       float p_term = error;
 
-      // integrator component (integral(error dt))
-      float i_term = i_prev + (error*dt);
-
       // derivative
-      float d_term = (error - prev_error)/dt;
-      
-      
-      float feedback = p_gain*p_term + i_gain*i_term + d_gain*d_term;
+      float d_term = (error - prev_error) / dt;
 
-      i_prev = i_term*i_gain;
-      prev_error = error;
+      // integrator component (integral(error dt))
+      float i_term = i_prev;
+      if ( abs(error) > abs(0.95 * demand)) {
+        dt = 0;
+      } else {
+        i_term = i_term + (error * dt);
+      }
       
+     
+      float feedback = p_gain * p_term + i_gain * i_term + d_gain * d_term;
+
+      i_prev = i_term * i_gain;
+      prev_error = error;
+
       return feedback;
 
     }
