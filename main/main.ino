@@ -34,6 +34,8 @@ int state;
 
 void setup() {
 
+  delay(1000);
+
   setupEncoder0();
   setupEncoder1();
   linesensor.initialise();
@@ -49,7 +51,8 @@ void setup() {
   // Configure the Serial port
   Serial.begin(9600);
 
-  state = FOLLOW_LINE;
+  // starting state
+  state = TO_LINE;
 
 
 }
@@ -60,7 +63,7 @@ void loop() {
   unsigned long elapsed_ts = millis() - ts;
 
   //  update all sensors
-  if ( elapsed_ts > 20) {
+  if ( elapsed_ts > 50) {
 
     // identify state and set state
 
@@ -78,9 +81,14 @@ void loop() {
     online3 = linesensor.onLine(3);
     online4 = linesensor.onLine(4);
 
-
-
+    //    update state
+    if (state == TO_LINE && online0 && online1 && online2 && online3 && online4) {
+      state = JOIN_LINE;
+    }
   }
+
+
+  
 
   // state actions...
 
@@ -90,21 +98,24 @@ void loop() {
 
   } else if (state == TO_LINE) {
 
-
+    // if the state is to_line just drive forward
+    motor.setMotorPower(30, 30);
 
   } else if (state == JOIN_LINE) {
 
+    motor.stop_robot();
 
-    
+
+
   } else if (state == FOLLOW_LINE) {
 
-      float dir = linesensor.weightFollow();
-      motor.stayOnLine(dir, 30);
+    float dir = linesensor.weightFollow();
+    motor.stayOnLine(dir, 30);
 
   } else if (state == TURN_AROUND) {
 
 
-    
+
   }
 
 

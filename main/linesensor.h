@@ -87,9 +87,9 @@ class LineSensor_c {
 
     boolean onLine(int sensorNumber) {
       // returns whether the given sensor is on the line (true)
-      //      or not
+      //      or not (in daylight around 800/850)
       int val = analogLineSensor(sensorNumber);
-      if (val > 700) {
+      if (val > 800) {
         return true;
       } else {
         return false;
