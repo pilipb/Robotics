@@ -22,6 +22,7 @@ Motors_c motor;
 #define RIGHT_ANGLE_R 5
 #define RIGHT_ANGLE_L 6
 #define RETURN_HOME 7
+#define OUT 8
 
 int state;
 int prev_state;
@@ -41,12 +42,17 @@ class STATE_c {
     }
 
     void initialise() {
-      state = TO_LINE;
+      state = OUT;
     }
 
     void update(boolean online0, boolean online1, boolean online2, boolean online3, boolean online4, unsigned long start_time) {
 
       // first travel to line in straight line until detect line
+      if (state == OUT && (millis() - start_time) > 1000) {
+
+        state = TO_LINE;
+        
+      }
       if (state == TO_LINE && online0 && online1 && online2 && online3 && online4) {
         motor.stop_robot();
         state = JOIN_LINE;
@@ -61,17 +67,15 @@ class STATE_c {
       } else if ((state == RIGHT_ANGLE_L | state == RIGHT_ANGLE_R ) && (abs(global_theta - last_angle) > (PI / 2))) {
         // safety stop to not miss line
         state = FOLLOW_LINE;
-
-        // continuing turning around until pi/2
-        //      } else if (state == TURN_AROUND && (abs(global_theta - last_angle) < PI / 2)) {
-        //
-        //        state = TURN_AROUND;
-        //        prev_state = TURN_AROUND;
-
+        
       } else if (state == TURN_AROUND && (abs(global_theta - last_angle) > PI)) {
 
         state = FOLLOW_LINE;
         prev_state = TURN_AROUND;
+
+      } else if (state == TURN_AROUND && (abs(global_theta - last_angle) < (PI - 0.4))){
+
+        state = TURN_AROUND;
 
       } else if (state == FOLLOW_LINE && online4 && (online0 + online1 + online2 + online3 == 0) ) {
 
@@ -87,7 +91,7 @@ class STATE_c {
 
       } else if (state == FOLLOW_LINE && prev_state == FOLLOW_LINE && (online1 + online2 + online3 == 0)) {
 
-        if ((millis() - start_time) > 1000) {
+        if ((millis() - start_time) > 20000) {
 
           state = RETURN_HOME;
           dist_x = global_X;
@@ -105,8 +109,6 @@ class STATE_c {
     }
 
 
-
-
     void action(unsigned long elapsed_ts) {
 
       if (state == DEBUG) {
@@ -121,17 +123,17 @@ class STATE_c {
         //        Serial.print(ls2);
         //        Serial.print(ls3);
         //        Serial.println(ls4);
-        Serial.print(global_X);
-        Serial.print("X");
-        Serial.print(",");
-        Serial.print(global_Y);
-        Serial.print("Y");
-        Serial.print(",");
-        Serial.print(global_theta);
-        Serial.println("theta");
-//        motor.turn_to(2*PI, elapsed_ts, 12);
+        //        Serial.print(global_X);
+        //        Serial.print("X");
+        //        Serial.print(",");
+        //        Serial.print(global_Y);
+        //        Serial.print("Y");
+        //        Serial.print(",");
+        //        Serial.print(global_theta);
+        //        Serial.println("theta");
+        //        motor.turn_to(2*PI, elapsed_ts, 12);
 
-      } else if (state == TO_LINE) {
+      } else if (state == TO_LINE | state == OUT) {
 
         // if the state is to_line just drive forward
         motor.setMotorPower(30, 30);
@@ -161,8 +163,8 @@ class STATE_c {
 
         // calculate distance travelled
         if ((abs(global_X) + abs(global_Y)) > 50) {
-          
-          motor.turn_to( -PI/2 - (atan(global_X/global_Y)), elapsed_ts, 12);
+
+          motor.turn_to( -PI / 2 - (atan(global_X / global_Y)), elapsed_ts, 12);
 
         } else {
           motor.stop_robot();
