@@ -56,7 +56,7 @@ void loop() {
   unsigned long elapsed_ts = millis() - ts;
 
   //  update all sensors and state
-  if ( elapsed_ts > 10) {
+  if ( elapsed_ts > 200) {
 
     //    update matics
     long delta_e0 = count_e0 - e0_count_t;
@@ -65,6 +65,11 @@ void loop() {
     e0_count_t = count_e0;
     e1_count_t = count_e1;
 
+    ts = millis();
+  }
+
+  if (elapsed_ts > 20) {
+
     //    update linesensors
     online0 = linesensor.onLine(0);
     online1 = linesensor.onLine(1);
@@ -72,13 +77,12 @@ void loop() {
     online3 = linesensor.onLine(3);
     online4 = linesensor.onLine(4);
 
-
     // update state
     state_c.update(online0, online1, online2, online3, online4, start_time);
-    ts = millis();
+
+    // state actions based on update
+    state_c.action(elapsed_ts);
   }
 
-  // state actions based on update
-  state_c.action();
 
 }
