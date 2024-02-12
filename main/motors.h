@@ -39,9 +39,14 @@ class Motors_c {
       pinMode( R_DIR_PIN, OUTPUT);
       pinMode( L_DIR_PIN, OUTPUT);
 
-      heading_pid.initialise(50, 0.01, 0);
+      heading_pid.initialise(0.4, 0.001, 0);
       heading_feedback = 0;
 
+    }
+
+    void straight_line(float dir, int speed){
+      
+      
     }
 
     void stayOnLine(float dir, int speed) {
@@ -58,14 +63,11 @@ class Motors_c {
       setMotorPower(-30, 30);
     }
 
-    void turn_to(float heading_demand, unsigned long elapsed_ts) {
-
+    void turn_to(float heading_demand, unsigned long elapsed_ts, int speed) {
+      
       heading_feedback = heading_pid.update(heading_demand, global_theta, elapsed_ts);
-      if (heading_feedback < 10 ) {
-        stop_robot();
-      } else {
-        setMotorPower(heading_feedback, -heading_feedback);
-      }
+      setMotorPower(20 + (speed*heading_feedback), 20 - (speed * heading_feedback));
+
     }
 
     float vel_rot(int wheel, unsigned long elapsed_ts) {
@@ -88,8 +90,6 @@ class Motors_c {
       return velocity;
 
     }
-
-
 
     void set_dir(boolean forwards) {
       if (forwards) {
