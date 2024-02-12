@@ -87,17 +87,21 @@ class LineSensor_c {
 
     boolean onLine(int sensorNumber) {
       // returns whether the given sensor is on the line (true)
-      //      or not (in daylight around 800/850)
+      //      or not (in daylight around 800)
       int val = analogLineSensor(sensorNumber);
-      if (val > 800) {
+      int threshold = 790;
+      if (sensorNumber == 4){
+        threshold = 820;
+      }
+      if (val > threshold) {
         return true;
       } else {
         return false;
       }
     }
 
-    float analogLineSensor(int sensorNumber) {
-      float val;
+    int analogLineSensor(int sensorNumber) {
+      int val;
       val = analogRead(ls_pins[sensorNumber]);
       return val;
     }
