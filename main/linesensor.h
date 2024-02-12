@@ -91,7 +91,7 @@ class LineSensor_c {
       int val = analogLineSensor(sensorNumber);
       int threshold = 790;
       if (sensorNumber == 4){
-        threshold = 820;
+        threshold = 810;
       }
       if (val > threshold) {
         return true;
