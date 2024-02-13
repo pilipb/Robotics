@@ -75,7 +75,7 @@ class Motors_c {
     }
 
     void turn_right() {
-      setMotorPower(30, -30);
+      setMotorPower(30,0);
     }
 
     void turn_left() {
@@ -84,10 +84,8 @@ class Motors_c {
 
     void turn_to(float heading_demand, unsigned long elapsed_ts, int speed) {
 
-
       heading_feedback = heading_pid.update(heading_demand, global_theta, elapsed_ts);
       setMotorPower((speed * heading_feedback), (-speed * heading_feedback));
-
 
     }
 
