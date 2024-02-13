@@ -85,7 +85,7 @@ class STATE_c {
 
       } else if (state == FOLLOW_LINE  && (online0 + online1 + online2 + online3 + online4 == 0)) {
 
-        if ((millis() - start_time) > 100000) {
+        if ((millis() - start_time) > 1000000) {
 
           state = RETURN_HOME;
           dist_x = global_X;
@@ -139,12 +139,12 @@ class STATE_c {
 
       } else if (state == JOIN_LINE) {
 
-        motor.turn_right();
+        motor.turn_left();
 
       } else if (state == FOLLOW_LINE) {
 
         float dir = linesensor.weightFollow();
-        motor.stayOnLine(dir, 35);
+        motor.stayOnLine(dir, 30);
 
       } else if (state == TURN_AROUND) {
 
