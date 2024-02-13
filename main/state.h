@@ -42,7 +42,7 @@ class STATE_c {
     }
 
     void initialise() {
-      state = OUT;
+      state = TO_LINE;
     }
 
     void update(boolean online0, boolean online1, boolean online2, boolean online3, boolean online4, unsigned long start_time) {
@@ -91,7 +91,7 @@ class STATE_c {
 
       } else if (state == FOLLOW_LINE  && (online0 + online1 + online2 + online3 + online4 == 0)) {
 
-        if ((millis() - start_time) > 5000) {
+        if ((millis() - start_time) > 20000) {
 
           state = RETURN_HOME;
           dist_x = global_X;
@@ -131,7 +131,9 @@ class STATE_c {
         //        Serial.print(",");
         //        Serial.print(global_theta);
         //        Serial.println("theta");
-        //        motor.turn_to(2*PI, elapsed_ts, 12);
+        //        motor.turn_to(PI, elapsed_ts, 20);
+        motor.straight_line(100,elapsed_ts);
+
 
       } else if (state == TO_LINE | state == OUT) {
 
@@ -166,6 +168,7 @@ class STATE_c {
         if ((abs(global_X) + abs(global_Y)) > 50) {
 
           float angle;
+
           if (global_Y >= 0) {
             if (global_X >= 0) {
               angle = (PI / 2) + atan(abs(global_X) / abs(global_Y));
@@ -178,7 +181,7 @@ class STATE_c {
             } else {
               angle = (-PI / 2) + atan(abs(global_X) / abs(global_Y));
             }
-            
+
           }
           motor.turn_to(angle, elapsed_ts, 15);
 

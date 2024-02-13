@@ -20,7 +20,12 @@ long e0_count_t;
 long e1_count_t;
 
 PID_c heading_pid;
+PID_c left_PID;
+PID_c right_PID;
 float heading_feedback;
+
+float left_feedback;
+float right_feedback;
 
 
 // Class to operate the motor(s).
@@ -39,15 +44,29 @@ class Motors_c {
       pinMode( R_DIR_PIN, OUTPUT);
       pinMode( L_DIR_PIN, OUTPUT);
 
-      heading_pid.initialise(0.4, 0.001, 0);
+      heading_pid.initialise(0.3, 0.01, 0);
+      left_PID.initialise(1,0,0);
+      right_PID.initialise(1,0,0);
       heading_feedback = 0;
+      left_feedback = 0;
+      right_feedback = 0;
 
     }
 
-    void straight_line(float dir, int speed){
-      
-      
+    void straight_line(float speed, unsigned long elapsed_ts){
+
+      // go in straight line at speed cm/s 
+      float rot_demand = (speed / 1.6) / 2; // as there are two wheel
+
+      float measure_left = vel_rot(1, elapsed_ts);
+      float measure_right = vel_rot(0, elapsed_ts);
+
+      left_feedback = left_PID.update(rot_demand, measure_left, elapsed_ts);
+      right_feedback = right_PID.update(rot_demand, measure_right, elapsed_ts);
+
+      setMotorPower(left_feedback, right_feedback);
     }
+    
 
     void stayOnLine(float dir, int speed) {
       // scale power to the wheels based the direction from linesensor
@@ -66,7 +85,7 @@ class Motors_c {
     void turn_to(float heading_demand, unsigned long elapsed_ts, int speed) {
       
       heading_feedback = heading_pid.update(heading_demand, global_theta, elapsed_ts);
-      setMotorPower(20 + (speed*heading_feedback), 20 - (speed * heading_feedback));
+      setMotorPower(20 + (speed*heading_feedback), 20 + (-speed * heading_feedback));
 
     }
 
