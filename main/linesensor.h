@@ -67,7 +67,7 @@ class LineSensor_c {
       float ls4 = analogLineSensor(3);
       float sum = ls1 + ls2 + ls4 + ls5;
       //      normalise and double
-      float W = (ls5 + ls4 - ls1 - ls2) * 2 / max(ls2, ls4);
+      float W = (ls5 + 1.3*ls4 - ls1 - 1.3*ls2) * 2 / (sum/4);
      
       return W;
     }
@@ -93,9 +93,9 @@ class LineSensor_c {
       // returns whether the given sensor is on the line (true)
       //      or not (in daylight around 800)
       int val = analogLineSensor(sensorNumber);
-      int threshold = 800;
+      int threshold = 830;
       if (sensorNumber == 4) {
-        threshold = 810;
+        threshold = 850;
       }
       if (val > threshold) {
         return true;

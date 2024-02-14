@@ -6,7 +6,6 @@
 #include "pid.h"
 
 STATE_c state_c;
-PID_c pid1;
 //Motors_c motor;
 //LineSensor_c linesensor;
 Kinematics_c matics;

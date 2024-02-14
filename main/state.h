@@ -59,7 +59,7 @@ class STATE_c {
         prev_state = TO_LINE;
 
         // join line by rotating
-      } else if (state == JOIN_LINE && (global_theta > (PI / 6))) {
+      } else if (state == JOIN_LINE && (abs(global_theta) > (PI / 6))) {
 
         state = FOLLOW_LINE;
         prev_state = JOIN_LINE;
@@ -74,7 +74,7 @@ class STATE_c {
         state = CROSS;
         last_angle = global_theta;
 
-      } else if (state == TURN_AROUND && (abs(global_theta - last_angle) > 0.9*PI)) {
+      } else if (state == TURN_AROUND && (abs(global_theta - last_angle) > 0.9 * PI)) {
 
         state = FOLLOW_LINE;
         prev_state = TURN_AROUND;
@@ -85,14 +85,14 @@ class STATE_c {
 
       } else if (state == FOLLOW_LINE  && (online0 + online1 + online2 + online3 + online4 == 0)) {
 
-        if ((millis() - start_time) > 1000000) {
+        if ((millis() - start_time) > 100000 | (abs(global_X) + abs(global_Y) > 1000)) {
 
           state = RETURN_HOME;
           dist_x = global_X;
           dist_y = global_Y;
           last_angle = global_theta;
 
-        } else {
+        } else if (online0 + online1 + online2 + online3 + online4 == 0) {
 
           state = TURN_AROUND;
           last_angle = global_theta;
@@ -125,12 +125,8 @@ class STATE_c {
         //        Serial.print(",");
         //        Serial.print(global_theta);
         //        Serial.println("theta");
-        if ( abs(global_theta - PI) > 0.4 ) {
-          motor.turn_to(PI, elapsed_ts, 30);
 
-        } else {
-          motor.straight_line(100, elapsed_ts);
-        }
+        motor.turn_to(PI, elapsed_ts, 25);
 
       } else if (state == TO_LINE | state == OUT) {
 
@@ -144,7 +140,7 @@ class STATE_c {
       } else if (state == FOLLOW_LINE) {
 
         float dir = linesensor.weightFollow();
-        motor.stayOnLine(dir, 30);
+        motor.stayOnLine(dir, 40);
 
       } else if (state == TURN_AROUND) {
 
@@ -157,28 +153,18 @@ class STATE_c {
 
       } else if (state == RETURN_HOME) {
 
-        motor.stop_robot();
-        // calculate distance travelled
-        if ((abs(global_X) + abs(global_Y)) > 50) {
+        if (abs(global_X) + abs(global_Y) > 20) {
 
           float angle;
-
-          if (global_Y >= 0) {
-            if (global_X >= 0) {
-              angle = (PI / 2) + atan(abs(global_X) / abs(global_Y));
-            } else {
-              angle = (PI / 2) - atan(abs(global_X) / abs(global_Y));
-            }
+          if (global_Y != 0) {
+            angle = atan2(-global_Y, -global_X); // Calculate the angle correctly using atan2
+          } else if (global_X < 0) {
+            angle = M_PI; // Facing directly opposite if global_Y == 0 and global_X < 0
           } else {
-            if (global_X >= 0) {
-              angle = (-PI / 2) - atan(abs(global_X) / abs(global_Y));
-            } else {
-              angle = (-PI / 2) + atan(abs(global_X) / abs(global_Y));
-            }
-
+            angle = 0; // Facing directly forward if global_Y == 0 and global_X >= 0
           }
-          motor.turn_to(angle, elapsed_ts, 30);
-          motor.straight_line(400, elapsed_ts);
+
+          motor.turn_to(angle, elapsed_ts, 25);
 
         } else {
           motor.stop_robot();

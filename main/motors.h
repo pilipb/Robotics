@@ -20,8 +20,8 @@ long e0_count_t;
 long e1_count_t;
 
 PID_c heading_pid;
-PID_c left_PID;
-PID_c right_PID;
+//PID_c left_PID;
+//PID_c right_PID;
 float heading_feedback;
 
 float left_feedback;
@@ -44,28 +44,28 @@ class Motors_c {
       pinMode( R_DIR_PIN, OUTPUT);
       pinMode( L_DIR_PIN, OUTPUT);
 
-      heading_pid.initialise(80, 1, 0);
-      left_PID.initialise(1, 0, 0);
-      right_PID.initialise(1, 0, 0);
+      heading_pid.initialise(5, 0.001, 0);
+      //      left_PID.initialise(0, 0, 0);
+      //      right_PID.initialise(0, 0, 0);
       heading_feedback = 0;
       left_feedback = 0;
       right_feedback = 0;
 
     }
 
-    void straight_line(float speed, unsigned long elapsed_ts) {
-
-      // go in straight line at speed cm/s
-      float rot_demand = (speed / 1.6) / 2; // as there are two wheel
-
-      float measure_left = vel_rot(1, elapsed_ts);
-      float measure_right = vel_rot(0, elapsed_ts);
-
-      left_feedback = left_PID.update(rot_demand, measure_left, elapsed_ts);
-      right_feedback = right_PID.update(rot_demand, measure_right, elapsed_ts);
-
-      setMotorPower(left_feedback, right_feedback);
-    }
+    //    void straight_line(float speed, unsigned long elapsed_ts) {
+    //
+    //      // go in straight line at speed cm/s
+    //      float rot_demand = (speed / 1.6) / 2; // as there are two wheel
+    //
+    //      float measure_left = vel_rot(1, elapsed_ts);
+    //      float measure_right = vel_rot(0, elapsed_ts);
+    //
+    //      left_feedback = left_PID.update(rot_demand, measure_left, elapsed_ts);
+    //      right_feedback = right_PID.update(rot_demand, measure_right, elapsed_ts);
+    //
+    //      setMotorPower(left_feedback, right_feedback);
+    //    }
 
 
     void stayOnLine(float dir, int speed) {
@@ -75,7 +75,7 @@ class Motors_c {
     }
 
     void turn_right() {
-      setMotorPower(30,0);
+      setMotorPower(30, 0);
     }
 
     void turn_left() {
@@ -85,7 +85,8 @@ class Motors_c {
     void turn_to(float heading_demand, unsigned long elapsed_ts, int speed) {
 
       heading_feedback = heading_pid.update(heading_demand, global_theta, elapsed_ts);
-      setMotorPower((speed * heading_feedback), (-speed * heading_feedback));
+      //      setMotorPower((speed * heading_feedback),(-speed * heading_feedback));
+      stayOnLine(heading_feedback, speed);
 
     }
 
