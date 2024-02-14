@@ -47,7 +47,7 @@ class STATE_c {
     }
 
     void initialise() {
-      state = FOLLOW_LINE;
+      state = OUT;
       maze = false;
     }
 
@@ -110,7 +110,7 @@ class STATE_c {
 
       } else if (state == FOLLOW_LINE  && (online0 + online1 + online2 + online3 + online4 == 0)) {
 
-        if ((millis() - start_time) > 100000 | (abs(global_X) + abs(global_Y) > 1100)) {
+        if ((millis() - start_time) > 5000 | (abs(global_X) + abs(global_Y) > 1100)) {
 
           state = RETURN_HOME;
           dist_x = global_X;
