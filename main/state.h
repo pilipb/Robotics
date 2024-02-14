@@ -19,8 +19,8 @@ Motors_c motor;
 #define JOIN_LINE 2
 #define FOLLOW_LINE 3
 #define TURN_AROUND 4
-#define RIGHT_ANGLE_R 5
-#define RIGHT_ANGLE_L 6
+#define TURN_RIGHT 5
+#define TURN_LEFT 6
 #define RETURN_HOME 7
 #define OUT 8
 #define CROSS 9
@@ -43,7 +43,7 @@ class STATE_c {
     }
 
     void initialise() {
-      state = FOLLOW_LINE;
+      state = OUT;
     }
 
     void update(boolean online0, boolean online1, boolean online2, boolean online3, boolean online4, unsigned long start_time) {
@@ -59,7 +59,7 @@ class STATE_c {
         prev_state = TO_LINE;
 
         // join line by rotating
-      } else if (state == JOIN_LINE && (abs(global_theta) > (PI / 6))) {
+      } else if (state == JOIN_LINE && (abs(global_theta) > (PI / 2))) {
 
         state = FOLLOW_LINE;
         prev_state = JOIN_LINE;
@@ -74,6 +74,24 @@ class STATE_c {
         state = CROSS;
         last_angle = global_theta;
 
+      } else if (state == FOLLOW_LINE && online0 == 0 && (online1 + online2 + online3 + online4 == 4)) {
+
+        state = TURN_RIGHT;
+        last_angle = global_theta;
+
+      } else if (state == FOLLOW_LINE && online4 == 0 && (online0 + online1 + online2 + online3 == 4)) {
+
+        state = TURN_LEFT;
+        last_angle = global_theta;
+
+      } else if (state == TURN_RIGHT  && (abs(global_theta - last_angle) > PI / 2)) {
+
+        state = FOLLOW_LINE;
+
+      } else if (state == TURN_LEFT && (abs(global_theta - last_angle) > PI / 2)) {
+
+        state = FOLLOW_LINE;
+
       } else if (state == TURN_AROUND && (abs(global_theta - last_angle) > 0.9 * PI)) {
 
         state = FOLLOW_LINE;
@@ -85,7 +103,7 @@ class STATE_c {
 
       } else if (state == FOLLOW_LINE  && (online0 + online1 + online2 + online3 + online4 == 0)) {
 
-        if ((millis() - start_time) > 100000 | (abs(global_X) + abs(global_Y) > 1000)) {
+        if ((millis() - start_time) > 10000 | (abs(global_X) + abs(global_Y) > 1100)) {
 
           state = RETURN_HOME;
           dist_x = global_X;
@@ -144,30 +162,35 @@ class STATE_c {
 
       } else if (state == TURN_AROUND) {
 
-        motor.turn_left(); // function turns on the spot
+        motor.turn_left_spot(); // function turns on the spot
 
-      } else if (state == CROSS) {
+      } else if (state == TURN_RIGHT | state == CROSS) {
 
-        // need to bias right always (not on the spot)
         motor.turn_right();
+
+      } else if (state == TURN_LEFT) {
+
+        motor.turn_left();
 
       } else if (state == RETURN_HOME) {
 
-        if (abs(global_X) + abs(global_Y) > 20) {
+        if (abs(global_X) + abs(global_Y) > 15) {
 
           float angle;
           if (global_Y != 0) {
             angle = atan2(-global_Y, -global_X); // Calculate the angle correctly using atan2
           } else if (global_X < 0) {
-            angle = M_PI; // Facing directly opposite if global_Y == 0 and global_X < 0
+            angle = 0; // Facing directly opposite if global_Y == 0 and global_X < 0
           } else {
-            angle = 0; // Facing directly forward if global_Y == 0 and global_X >= 0
+            angle = PI; // Facing directly forward if global_Y == 0 and global_X >= 0
           }
 
           motor.turn_to(angle, elapsed_ts, 25);
 
         } else {
+          
           motor.stop_robot();
+          
         }
 
       }

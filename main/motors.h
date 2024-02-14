@@ -44,7 +44,7 @@ class Motors_c {
       pinMode( R_DIR_PIN, OUTPUT);
       pinMode( L_DIR_PIN, OUTPUT);
 
-      heading_pid.initialise(5, 0.001, 0);
+      heading_pid.initialise(2, 0.01, 0);
       //      left_PID.initialise(0, 0, 0);
       //      right_PID.initialise(0, 0, 0);
       heading_feedback = 0;
@@ -71,7 +71,7 @@ class Motors_c {
     void stayOnLine(float dir, int speed) {
       // scale power to the wheels based the direction from linesensor
       // dir too far: = -1 = left, 0 = straight, 1 = right
-      setMotorPower( 18 + (dir * speed), 18 - (dir * speed)); // speed is effectivel K_p gain
+      setMotorPower( 20 + (dir * speed), 20 - (dir * speed)); // speed is effectivel K_p gain
     }
 
     void turn_right() {
@@ -79,6 +79,10 @@ class Motors_c {
     }
 
     void turn_left() {
+      setMotorPower(0, 30);
+    }
+
+    void turn_left_spot() {
       setMotorPower(-30, 30);
     }
 
