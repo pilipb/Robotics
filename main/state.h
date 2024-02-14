@@ -25,6 +25,9 @@ Motors_c motor;
 #define OUT 8
 #define CROSS 9
 
+
+boolean maze;
+
 int state;
 int prev_state;
 
@@ -32,6 +35,7 @@ float last_angle;
 
 long dist_x;
 long dist_y;
+
 
 // Class to contain generic PID algorithm.
 class STATE_c {
@@ -43,12 +47,14 @@ class STATE_c {
     }
 
     void initialise() {
-      state = OUT;
+      state = FOLLOW_LINE;
+      maze = false;
     }
 
     void update(boolean online0, boolean online1, boolean online2, boolean online3, boolean online4, unsigned long start_time) {
 
       // first travel to line in straight line until detect line
+      maze = false;
       if (state == OUT && (millis() - start_time) > 800) {
 
         state = TO_LINE;
@@ -65,34 +71,26 @@ class STATE_c {
         prev_state = JOIN_LINE;
         last_angle = global_theta;
 
-      } else if (state == CROSS && (abs(global_theta - last_angle) > PI / 2)) {
+      } else if (state == CROSS && (abs(global_theta - last_angle) > (PI / 3))) {
 
         state = FOLLOW_LINE;
 
       } else if (state == FOLLOW_LINE && (online0 + online1 + online2 + online3 + online4 == 5) ) {
 
         state = CROSS;
+        maze = true;
         last_angle = global_theta;
+
+      } else if (state == TURN_RIGHT  && (online1 + online2 == 2 ) | (abs(global_theta - last_angle) > PI / 2) ) {
+
+        state = FOLLOW_LINE;
 
       } else if (state == FOLLOW_LINE && online0 == 0 && (online1 + online2 + online3 + online4 == 4)) {
 
         state = TURN_RIGHT;
         last_angle = global_theta;
 
-      } else if (state == FOLLOW_LINE && online4 == 0 && (online0 + online1 + online2 + online3 == 4)) {
-
-        state = TURN_LEFT;
-        last_angle = global_theta;
-
-      } else if (state == TURN_RIGHT  && (abs(global_theta - last_angle) > PI / 2)) {
-
-        state = FOLLOW_LINE;
-
-      } else if (state == TURN_LEFT && (abs(global_theta - last_angle) > PI / 2)) {
-
-        state = FOLLOW_LINE;
-
-      } else if (state == TURN_AROUND && (abs(global_theta - last_angle) > 0.9 * PI)) {
+      } else if (state == TURN_AROUND && (abs(global_theta - last_angle) > PI)) {
 
         state = FOLLOW_LINE;
         prev_state = TURN_AROUND;
@@ -101,9 +99,18 @@ class STATE_c {
 
         state = TURN_AROUND;
 
+      } else if (state == TURN_LEFT && (online2 + online3 == 2 ) |  (abs(global_theta - last_angle) > PI / 2)) {
+
+        state = FOLLOW_LINE;
+
+      } else if (state == FOLLOW_LINE && maze == false && online4 == 0 && (online0 + online1 + online2 + online3 == 4)) {
+
+        state = TURN_LEFT;
+        last_angle = global_theta;
+
       } else if (state == FOLLOW_LINE  && (online0 + online1 + online2 + online3 + online4 == 0)) {
 
-        if ((millis() - start_time) > 10000 | (abs(global_X) + abs(global_Y) > 1100)) {
+        if ((millis() - start_time) > 100000 | (abs(global_X) + abs(global_Y) > 1100)) {
 
           state = RETURN_HOME;
           dist_x = global_X;
@@ -146,6 +153,8 @@ class STATE_c {
 
         motor.turn_to(PI, elapsed_ts, 25);
 
+
+
       } else if (state == TO_LINE | state == OUT) {
 
         // if the state is to_line just drive forward
@@ -158,13 +167,13 @@ class STATE_c {
       } else if (state == FOLLOW_LINE) {
 
         float dir = linesensor.weightFollow();
-        motor.stayOnLine(dir, 40);
+        motor.stayOnLine(dir, 40, 19);
 
       } else if (state == TURN_AROUND) {
 
         motor.turn_left_spot(); // function turns on the spot
 
-      } else if (state == TURN_RIGHT | state == CROSS) {
+      } else if (state == TURN_RIGHT || state == CROSS) {
 
         motor.turn_right();
 
@@ -174,25 +183,24 @@ class STATE_c {
 
       } else if (state == RETURN_HOME) {
 
-        if (abs(global_X) + abs(global_Y) > 15) {
+        if (abs(global_X) + abs(global_Y) > 10) {
 
           float angle;
           if (global_Y != 0) {
-            angle = atan2(-global_Y, -global_X); // Calculate the angle correctly using atan2
+            angle = atan2(-global_Y, -global_X);
           } else if (global_X < 0) {
-            angle = 0; // Facing directly opposite if global_Y == 0 and global_X < 0
+            angle = 0; // facing opposite
           } else {
-            angle = PI; // Facing directly forward if global_Y == 0 and global_X >= 0
+            angle = PI; // facing forward
           }
 
-          motor.turn_to(angle, elapsed_ts, 25);
+          motor.turn_to(angle, elapsed_ts, 30);
 
         } else {
-          
-          motor.stop_robot();
-          
-        }
 
+          motor.stop_robot();
+
+        }
       }
     }
 };

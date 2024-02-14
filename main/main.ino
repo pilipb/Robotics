@@ -72,7 +72,7 @@ void loop() {
 
 
   //  update all sensors and state
-  if ( elapsed_ts > 50) {
+  if ( elapsed_ts > 100) {
 
     //    update matics
     long delta_e0 = count_e0 - e0_count_t;
@@ -80,7 +80,6 @@ void loop() {
     matics.update(delta_e0, delta_e1);
     e0_count_t = count_e0;
     e1_count_t = count_e1;
-
     ts = millis();
   }
 
