@@ -157,31 +157,23 @@ class STATE_c {
 
       } else if (state == RETURN_HOME) {
 
-        motor.stop_robot();
-        // calculate distance travelled
-        if ((abs(global_X) + abs(global_Y)) > 50) {
+        if (abs(global_X) + abs(global_Y) > 10) {
 
           float angle;
-
-          if (global_Y >= 0) {
-            if (global_X >= 0) {
-              angle = (PI / 2) + atan(abs(global_X) / abs(global_Y));
-            } else {
-              angle = (PI / 2) - atan(abs(global_X) / abs(global_Y));
-            }
+          if (global_Y != 0) {
+            angle = atan2(-global_Y, -global_X);
+          } else if (global_X < 0) {
+            angle = 0; // facing opposite
           } else {
-            if (global_X >= 0) {
-              angle = (-PI / 2) - atan(abs(global_X) / abs(global_Y));
-            } else {
-              angle = (-PI / 2) + atan(abs(global_X) / abs(global_Y));
-            }
-
+            angle = PI; // facing forward
           }
+
           motor.turn_to(angle, elapsed_ts, 30);
-          motor.straight_line(400, elapsed_ts);
 
         } else {
+
           motor.stop_robot();
+
         }
 
       }
