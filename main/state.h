@@ -59,7 +59,7 @@ class STATE_c {
         prev_state = TO_LINE;
 
         // join line by rotating
-      } else if (state == JOIN_LINE && (global_theta > (PI / 6))) {
+      } else if (state == JOIN_LINE && (abs(global_theta) > (PI / 4))) {
 
         state = FOLLOW_LINE;
         prev_state = JOIN_LINE;
