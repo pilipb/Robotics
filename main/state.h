@@ -43,7 +43,7 @@ class STATE_c {
     }
 
     void initialise() {
-      state = FOLLOW_LINE;
+      state = OUT;
     }
 
     void update(boolean online0, boolean online1, boolean online2, boolean online3, boolean online4, unsigned long start_time, unsigned long elapsed_ts) {
@@ -83,7 +83,7 @@ class STATE_c {
 
       } else if (state == FOLLOW_LINE  && (online0 + online1 + online2 + online3 + online4 == 0) && (elapsed_ts > 20)) {
 
-        if ((millis() - start_time) > 100000) {
+        if ((millis() - start_time) > 10000 | ( abs(global_X) + abs(global_Y) > 1100)) {
 
           state = RETURN_HOME;
           dist_x = global_X;
@@ -97,7 +97,6 @@ class STATE_c {
           prev_state = FOLLOW_LINE;
 
         }
-
       }
     }
 
@@ -143,7 +142,7 @@ class STATE_c {
       } else if (state == FOLLOW_LINE) {
 
         float dir = linesensor.weightFollow();
-        motor.stayOnLine(dir, 40);
+        motor.stayOnLine(dir, 40,19);
 
       } else if (state == TURN_AROUND) {
 

@@ -68,18 +68,17 @@ class Motors_c {
     }
 
 
-    void stayOnLine(float dir, int speed) {
+    void stayOnLine(float dir, int speed, int con_speed) {
       // scale power to the wheels based the direction from linesensor
       // dir too far: = -1 = left, 0 = straight, 1 = right
-      setMotorPower( 19 + (dir * speed), 19 - (dir * speed)); // speed is effectivel K_p gain
+      setMotorPower( con_speed + (dir * speed), con_speed - (dir * speed)); // speed is effectivel K_p gain
     }
-
     void turn_right() {
-      setMotorPower(25,0);
+      setMotorPower(25, 0);
     }
 
     void turn_right_spot() {
-      setMotorPower(25,-25);
+      setMotorPower(25, -25);
     }
 
     void turn_left() {
@@ -89,7 +88,8 @@ class Motors_c {
     void turn_to(float heading_demand, unsigned long elapsed_ts, int speed) {
 
       heading_feedback = heading_pid.update(heading_demand, global_theta, elapsed_ts);
-      setMotorPower((speed * heading_feedback), (-speed * heading_feedback));
+      //      setMotorPower((speed * heading_feedback),(-speed * heading_feedback));
+      stayOnLine(heading_feedback, speed, speed);
 
     }
 
