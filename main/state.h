@@ -46,7 +46,7 @@ class STATE_c {
       state = FOLLOW_LINE;
     }
 
-    void update(boolean online0, boolean online1, boolean online2, boolean online3, boolean online4, unsigned long start_time) {
+    void update(boolean online0, boolean online1, boolean online2, boolean online3, boolean online4, unsigned long start_time, unsigned long elapsed_ts) {
 
       // first travel to line in straight line until detect line
       if (state == OUT && (millis() - start_time) > 800) {
@@ -68,20 +68,18 @@ class STATE_c {
       } else if (state == CROSS && (abs(global_theta - last_angle) > PI / 2)) {
 
         state = FOLLOW_LINE;
+        prev_state = CROSS;
 
-      } else if (state == FOLLOW_LINE && (online0 + online1 + online2 + online3 + online4 == 5) ) {
+      } else if (state == FOLLOW_LINE && (online0 + online1 + online3 + online4 == 4) ) {
 
         state = CROSS;
         last_angle = global_theta;
+        prev_state = FOLLOW_LINE;
 
-      } else if (state == TURN_AROUND && (abs(global_theta - last_angle) > 0.9*PI)) {
+      } else if (state == TURN_AROUND && (abs(global_theta - last_angle) > PI)) {
 
         state = FOLLOW_LINE;
         prev_state = TURN_AROUND;
-
-      } else if (state == TURN_AROUND && (abs(global_theta - last_angle) < PI)) {
-
-        state = TURN_AROUND;
 
       } else if (state == FOLLOW_LINE  && (online0 + online1 + online2 + online3 + online4 == 0)) {
 
@@ -92,10 +90,11 @@ class STATE_c {
           dist_y = global_Y;
           last_angle = global_theta;
 
-        } else {
+        } else if (prev_state != TURN_AROUND ) {
 
           state = TURN_AROUND;
           last_angle = global_theta;
+          prev_state = FOLLOW_LINE;
 
         }
 

@@ -65,7 +65,7 @@ void loop() {
     online4 = linesensor.onLine(4);
 
     // update state
-    state_c.update(online0, online1, online2, online3, online4, start_time);
+    state_c.update(online0, online1, online2, online3, online4, start_time, elapsed_ts);
 
     // state actions based on update
     state_c.action(elapsed_ts);

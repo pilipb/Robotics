@@ -78,6 +78,10 @@ class Motors_c {
       setMotorPower(30,0);
     }
 
+    void turn_right_spot() {
+      setMotorPower(30,-30);
+    }
+
     void turn_left() {
       setMotorPower(-30, 30);
     }
