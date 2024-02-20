@@ -67,7 +67,7 @@ class LineSensor_c {
       float ls4 = analogLineSensor(3);
       float sum = ls1 + ls2 + ls4 + ls5;
       //      normalise and double
-      float W = (ls5 + ls4 - ls1 - ls2) * 2 / max(ls2, ls4);
+      float W = (ls5 + ls4 - ls1 - ls2 - 20) * 2 / max(ls2, ls4);
      
       return W;
     }

@@ -81,7 +81,7 @@ class STATE_c {
         state = FOLLOW_LINE;
         prev_state = TURN_AROUND;
 
-      } else if (state == FOLLOW_LINE  && (online0 + online1 + online2 + online3 + online4 == 0)) {
+      } else if (state == FOLLOW_LINE  && (online0 + online1 + online2 + online3 + online4 == 0) && (elapsed_ts > 20)) {
 
         if ((millis() - start_time) > 100000) {
 
@@ -90,7 +90,7 @@ class STATE_c {
           dist_y = global_Y;
           last_angle = global_theta;
 
-        } else if (prev_state != TURN_AROUND ) {
+        } else if (prev_state != TURN_AROUND) {
 
           state = TURN_AROUND;
           last_angle = global_theta;

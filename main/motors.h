@@ -71,7 +71,7 @@ class Motors_c {
     void stayOnLine(float dir, int speed) {
       // scale power to the wheels based the direction from linesensor
       // dir too far: = -1 = left, 0 = straight, 1 = right
-      setMotorPower( 20 + (dir * speed), 20 - (dir * speed)); // speed is effectivel K_p gain
+      setMotorPower( 19 + (dir * speed), 19 - (dir * speed)); // speed is effectivel K_p gain
     }
 
     void turn_right() {
