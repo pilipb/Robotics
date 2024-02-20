@@ -73,7 +73,7 @@ void loop() {
 
 
   //  update all sensors and state
-  if ( elapsed_ts > 50) {
+  if ( elapsed_ts > 100) {
 
     //    update matics
     long delta_e0 = count_e0 - e0_count_t;

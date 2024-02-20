@@ -59,7 +59,7 @@ class STATE_c {
         prev_state = TO_LINE;
 
         // join line by rotating
-      } else if (state == JOIN_LINE && (abs(global_theta) > (PI / 4))) {
+      } else if (state == JOIN_LINE && (abs(global_theta) > (PI / 3))) {
 
         state = FOLLOW_LINE;
         prev_state = JOIN_LINE;
@@ -76,14 +76,15 @@ class STATE_c {
         last_angle = global_theta;
         prev_state = FOLLOW_LINE;
 
-      } else if (state == TURN_AROUND && (abs(global_theta - last_angle) > PI)) {
+      } else if (state == TURN_AROUND && ( online2 == true || (abs(global_theta - last_angle) > PI) )) {
 
         state = FOLLOW_LINE;
         prev_state = TURN_AROUND;
 
-      } else if (state == FOLLOW_LINE  && (online0 + online1 + online2 + online3 + online4 == 0) && (elapsed_ts > 20)) {
+      //} else if (state == FOLLOW_LINE  && (online0 + online1 + online2 + online3 + online4 == 0) && (elapsed_ts > 20)) {
+       } else if (state == FOLLOW_LINE  && (!online0 && !online1 && !online2 && !online3 && !online4) && (elapsed_ts > 70)) {
 
-        if ((millis() - start_time) > 10000 | ( abs(global_X) + abs(global_Y) > 1100)) {
+        if ((millis() - start_time) > 200000 | ( abs(global_X) + abs(global_Y) > 1100)) {
 
           state = RETURN_HOME;
           dist_x = global_X;
@@ -155,7 +156,7 @@ class STATE_c {
 
       } else if (state == RETURN_HOME) {
 
-        if (abs(global_X) + abs(global_Y) > 10) {
+        if (abs(global_X) + abs(global_Y) > 20) {
 
           float angle;
           if (global_Y != 0) {
@@ -166,7 +167,7 @@ class STATE_c {
             angle = PI; // facing forward
           }
 
-          motor.turn_to(angle, elapsed_ts, 30);
+          motor.turn_to(angle, elapsed_ts, 40);
 
         } else {
 

@@ -89,7 +89,7 @@ class Motors_c {
 
       heading_feedback = heading_pid.update(heading_demand, global_theta, elapsed_ts);
       //      setMotorPower((speed * heading_feedback),(-speed * heading_feedback));
-      stayOnLine(heading_feedback, speed, speed);
+      stayOnLine(heading_feedback, speed, speed-5);
 
     }
 
