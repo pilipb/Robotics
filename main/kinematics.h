@@ -10,11 +10,11 @@ float global_X = 0;
 float global_Y = 0;
 float global_theta = 0;
 
-float l = 43; // mm 42.5
+float l = 41.4; // mm 42.5
 float r = 16; // mm 16
 
-float step_mm0 = PI * 2 * r / 360;
-float step_mm1 = PI * 2 * r / 360; // confirm value
+float step_mm0 = PI * 2 * r / 359;
+float step_mm1 = PI * 2 * r / 358; // confirm value
 
 
 // Class to track robot position.

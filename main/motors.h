@@ -44,7 +44,7 @@ class Motors_c {
       pinMode( R_DIR_PIN, OUTPUT);
       pinMode( L_DIR_PIN, OUTPUT);
 
-      heading_pid.initialise(80, 1, 0);
+      heading_pid.initialise(70, 1, 0);
       left_PID.initialise(1, 0, 0);
       right_PID.initialise(1, 0, 0);
       heading_feedback = 0;
@@ -74,15 +74,15 @@ class Motors_c {
       setMotorPower( con_speed + (dir * speed), con_speed - (dir * speed)); // speed is effectivel K_p gain
     }
     void turn_right() {
-      setMotorPower(25, 0);
+      setMotorPower(22, 0);
     }
 
     void turn_right_spot() {
-      setMotorPower(25, -25);
+      setMotorPower(22, -22);
     }
 
     void turn_left() {
-      setMotorPower(-25, 25);
+      setMotorPower(-22, 22);
     }
 
     void turn_to(float heading_demand, unsigned long elapsed_ts, int speed) {
