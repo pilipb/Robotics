@@ -75,15 +75,15 @@ class Motors_c {
     }
 
     void turn_right() {
-      setMotorPower(30,0);
+      setMotorPower(25,0);
     }
 
     void turn_right_spot() {
-      setMotorPower(30,-30);
+      setMotorPower(25,-25);
     }
 
     void turn_left() {
-      setMotorPower(-30, 30);
+      setMotorPower(-25, 25);
     }
 
     void turn_to(float heading_demand, unsigned long elapsed_ts, int speed) {

@@ -143,7 +143,7 @@ class STATE_c {
       } else if (state == FOLLOW_LINE) {
 
         float dir = linesensor.weightFollow();
-        motor.stayOnLine(dir, 35);
+        motor.stayOnLine(dir, 40);
 
       } else if (state == TURN_AROUND) {
 

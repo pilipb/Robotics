@@ -60,14 +60,14 @@ class LineSensor_c {
     float weightFollow() {
       // function to read two outer middle (2 and 4) sensors and return whether the robot should turn,
       // but as a contunuous value [-1 : 1 ]
-      float ls1 = analogLineSensor(0);
-      float ls5 = analogLineSensor(4);
+      float ls1 = 1.4 * analogLineSensor(0);
+      float ls5 = 1.4 * analogLineSensor(4);
 
       float ls2 = analogLineSensor(1);
       float ls4 = analogLineSensor(3);
       float sum = ls1 + ls2 + ls4 + ls5;
       //      normalise and double
-      float W = (ls5 + ls4 - ls1 - ls2 - 20) * 2 / max(ls2, ls4);
+      float W = (ls5 + ls4 - ls1 - ls2) * 2 / max(ls2, ls4);
      
       return W;
     }
