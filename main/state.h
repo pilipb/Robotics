@@ -84,7 +84,7 @@ class STATE_c {
       //} else if (state == FOLLOW_LINE  && (online0 + online1 + online2 + online3 + online4 == 0) && (elapsed_ts > 20)) {
        } else if (state == FOLLOW_LINE  && (!online0 && !online1 && !online2 && !online3 && !online4) && (elapsed_ts > 70)) {
 
-        if ((millis() - start_time) > 200000 | ( abs(global_X) + abs(global_Y) > 1100)) {
+        if (((millis() - start_time) > 45000 ) && (abs(global_X) + abs(global_Y) > 1500)) {
 
           state = RETURN_HOME;
           dist_x = global_X;
@@ -156,7 +156,7 @@ class STATE_c {
 
       } else if (state == RETURN_HOME) {
 
-        if (abs(global_X) + abs(global_Y) > 20) {
+        if (abs(global_X) + abs(global_Y) > 15) {
 
           float angle;
           if (global_Y != 0) {
