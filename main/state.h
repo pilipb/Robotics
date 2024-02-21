@@ -167,7 +167,7 @@ class STATE_c {
             angle = PI; // facing forward
           }
 
-          motor.turn_to(angle, elapsed_ts, 40);
+          motor.turn_to(angle, elapsed_ts, 30);
 
         } else {
 

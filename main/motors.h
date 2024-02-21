@@ -44,7 +44,7 @@ class Motors_c {
       pinMode( R_DIR_PIN, OUTPUT);
       pinMode( L_DIR_PIN, OUTPUT);
 
-      heading_pid.initialise(70, 1, 0);
+      heading_pid.initialise(0.8, 0.01, 0);
       left_PID.initialise(1, 0, 0);
       right_PID.initialise(1, 0, 0);
       heading_feedback = 0;
